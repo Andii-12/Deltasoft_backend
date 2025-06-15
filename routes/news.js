@@ -31,11 +31,13 @@ const upload = multer({ storage });
 
 // Get all news (public)
 router.get('/', async (req, res) => {
+  console.log('GET /api/news called');
   try {
     const news = await News.find().sort({ date: -1 });
     res.json(news);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Error in /api/news:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
