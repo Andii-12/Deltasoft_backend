@@ -3,9 +3,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const { router: authRouter, auth } = require('./routes/auth');
 const workerRouter = require('./routes/worker');
 const teamRouter = require('./routes/team');
+const trackVisitor = require('./middleware/visitorTracker');
 
 // Load environment variables
 dotenv.config();
@@ -35,6 +37,10 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(cookieParser());
+
+// Visitor tracking middleware (before routes)
+app.use(trackVisitor);
 
 // MongoDB Connection Options
 const mongooseOptions = {
@@ -87,6 +93,8 @@ const newsRouter = require('./routes/news');
 app.use('/api/news', newsRouter);
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/team', teamRouter);
+app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/logos', require('./routes/logos'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
